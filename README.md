@@ -2,6 +2,8 @@
 
 Steps to configure a single node kubernetes cluster with Kubeflow on Power.
 
+* These instructions assume knowledge of PPC64LE, Linux, Kubernetes and Kubeflow *
+
 ## Operating System
 
 Bare Metal install of Ubuntu Server 18.04 LTS for PPC64LE
@@ -290,10 +292,10 @@ kubectl create -f nvidia-device-plugin.yml
 
 ### Install Istio
 
-Download the istio tar file from Box folder.
+Download the istio
 
 ```shell
-wget 
+wget https://raw.githubusercontent.com/benswinney/oss/master/ibm-istio.tar.gz
 ```
 
 Uncompress and extract the file
@@ -321,27 +323,54 @@ helm install istio ../ibm-istio -n istio-system --set sidecarInjectorWebhook.ena
 Download kfctl for Power
 
 ```shell
-wget 
+wget https://raw.githubusercontent.com/benswinney/oss/master/kfctl_ppc64le.tar.gz
+```
 
-
-Download kubeflow-0.6.2.tar.gz file from Box folder
+Uncompress and extract the file
 
 ```shell
-wget 
+tar zxvf kfctl_ppc64le.tar.gz
+```
+
+Add to `kfctl` to PATH
+
+```shell
+export PATH=$PATH:"<path to kfctl>"
+```
+
+Download kubeflow-0.6.2
+
+```shell
+wget https://raw.githubusercontent.com/benswinney/oss/master/kubeflow-0.6.2.tar.gz
 ```
 
 Uncompress and extract the file
 
 ```shell
 tar zxvf kubeflow-0.6.2.tar.gz
+cd test-kubeflow
 ```
 
-Edit the install file to point to the full path.
+Edit the `app.yaml` file to point to the full path for test-kubeflow, replace <full-path>.
+
+Apply `app.yaml` and monitor installation.
 
 ```shell
-# Add kfctl to PATH, to make the kfctl binary easier to use.
-export PATH=$PATH:"<path to kfctl>"
-export KFAPP="<your choice of application directory name>"
-
 kfctl apply all -V
+```
+
+### Modify seldon-core-operator
+
+```shell
+kubectl edit StatefulSet/seldon-operator-controller-manager -n kubeflow
+
+Replace image with docker.io/adamjm32/seldon-core-operator:0.4.1-SNAPSHOT
+```
+
+### Get Kubeflow dashboard
+
+```shell
+kubectl get svc istio-ingressgateway -n istio-system
+
+Look for IP Address allocated under EXTERNAL-IP
 ```
