@@ -4,6 +4,12 @@ Steps to configure a single node kubernetes cluster with Kubeflow on Power.
 
 * These instructions assume knowledge of PPC64LE, Linux, Kubernetes and Kubeflow *
 
+```shell
+These instructions are intended to provide instruction for implementation of an AC922 by a senior technical member. Per mutual agreement, it is provided for informational purposes and is confirmed to be correct at the time of sending only.
+
+Due to the nature of the Open Source ecosystem, for these instructions to remain usable into the future, all relevant software should be stored securely and used for future installs. No copies of any referenced software will be kept, and no support will be provided in the event that these instructions become invalid due to changes to repositories or compatibility
+```
+
 ## Operating System
 
 Bare Metal install of Ubuntu Server 18.04 LTS for PPC64LE
@@ -22,6 +28,7 @@ Install the GPU driver by following these steps:
 
 Download the NVIDIA GPU driver.
 
+```shell
 Go to https://www.nvidia.com/Download/index.aspx
 
 Select Product Type: Tesla
@@ -31,8 +38,9 @@ Select Operating System, click Show all Operating Systems, then choose the corre
 Select CUDA Toolkit: 10.2
 Click SEARCH to go to the download link.
 Click Download to download the driver.
+```
 
-The driver file name is NVIDIA-Linux-ppc64le-440.87.01.run. Give this file execute permission and execute it on the Linux image where the GPU driver is to be installed. When the file is executed, you are asked two questions. It is recommended that you answer "Yes" to both questions. If the driver fails to install, check the /var/log/nvidia-installer.log file for relevant error messages.
+The driver file name is `NVIDIA-Linux-ppc64le-440.87.01.run`. Give this file execute permission and execute it on the Linux image where the GPU driver is to be installed. When the file is executed, you are asked two questions. It is recommended that you answer "Yes" to both questions. If the driver fails to install, check the `/var/log/nvidia-installer.log` file for relevant error messages.
 
 Install the GPU driver repository and cuda-drivers:
 
@@ -187,7 +195,7 @@ apiVersion: kubeadm.k8s.io/v1beta2
 kind: ClusterConfiguration
 kubernetesVersion: v1.15.11
 networking:
-  podSubnet: 192.168.0.0/16
+  podSubnet: 192.168.0.0/16 # Be careful this subnet does not clash with your existing server subnet, modify if it does.
   serviceSubnet: 10.96.0.0/12
 apiServer:
   extraArgs:
@@ -222,6 +230,8 @@ Now add a CNI (Container Network Interface) plugin.
 ```shell
 sed -i 's/^#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/' /etc/sysctl.conf
 sysctl -p /etc/sysctl.conf
+
+# If you needed to modify your podSubnet range, then you need to download the calico.yaml file and modify it with the same range you've chosen for your podSubnet.
 
 kubectl apply -f https://docs.projectcalico.org/v3.8/manifests/calico.yaml
 ```
@@ -351,7 +361,7 @@ tar zxvf kubeflow-0.6.2.tar.gz
 cd test-kubeflow
 ```
 
-Edit the `app.yaml` file to point to the full path for test-kubeflow, replace <full-path>.
+Edit the `app.yaml` file to point to the full path for test-kubeflow, replace full-path.
 
 Apply `app.yaml` and monitor installation.
 
@@ -367,7 +377,7 @@ kubectl edit StatefulSet/seldon-operator-controller-manager -n kubeflow
 Replace image with docker.io/adamjm32/seldon-core-operator:0.4.1-SNAPSHOT
 ```
 
-### Get Kubeflow dashboard
+### Get Kubeflow dashboard IP Address
 
 ```shell
 kubectl get svc istio-ingressgateway -n istio-system
