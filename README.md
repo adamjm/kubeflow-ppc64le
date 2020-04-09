@@ -4,9 +4,9 @@ Steps to configure a single node kubernetes cluster with Kubeflow on Power.
 
 * These instructions assume knowledge of PPC64LE, Linux, Kubernetes and Kubeflow *
 
-These instructions are intended to provide instruction for implementation of an AC922 by a senior technical member. Per mutual agreement, it is provided for informational purposes and is confirmed to be correct at the time of sending only.
+> These instructions are intended to provide instruction for implementation of an AC922 by a senior technical member. Per mutual agreement, it is provided for informational purposes and is confirmed to be correct at the time of sending only.
 
-Due to the nature of the Open Source ecosystem, for these instructions to remain usable into the future, all relevant software should be stored securely and used for future installs. No copies of any referenced software will be kept, and no support will be provided in the event that these instructions become invalid due to changes to repositories or compatibility
+> Due to the nature of the Open Source ecosystem, for these instructions to remain usable into the future, all relevant software should be stored securely and used for future installs. No copies of any referenced software will be kept, and no support will be provided in the event that these instructions become invalid due to changes to repositories or compatibility.
 
 ## Operating System
 
