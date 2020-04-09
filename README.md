@@ -20,15 +20,15 @@ Install the GPU driver by following these steps:
 
 Download the NVIDIA GPU driver.
 
-  Go to https://www.nvidia.com/Download/index.aspx
-    Select Product Type: Tesla
-    Select Product Series: V-Series (for Tesla V100).
-    Select Product: Tesla V100.
-    Select Operating System, click Show all Operating Systems, then choose the correct value:
-      Linux POWER LE Ubuntu 18.04 for POWER
-    Select CUDA Toolkit: 10.2
-    Click SEARCH to go to the download link.
-    Click Download to download the driver.
+Go to https://www.nvidia.com/Download/index.aspx
+
+Select Product Type: Tesla
+Select Product Series: V-Series (for Tesla V100).
+Select Product: Tesla V100.
+Select Operating System, click Show all Operating Systems, then choose the correct value: Linux POWER LE Ubuntu 18.04 for POWER
+Select CUDA Toolkit: 10.2
+Click SEARCH to go to the download link.
+Click Download to download the driver.
 
 The driver file name is NVIDIA-Linux-ppc64le-440.87.01.run. Give this file execute permission and execute it on the Linux image where the GPU driver is to be installed. When the file is executed, you are asked two questions. It is recommended that you answer "Yes" to both questions. If the driver fails to install, check the /var/log/nvidia-installer.log file for relevant error messages.
 
@@ -201,7 +201,7 @@ sudo kubeadm init --config kubeadm-config.yaml
 
 ### Allow non-root user to run kubectl and configure Kubernetes
 
-```shell 
+```shell
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
@@ -236,7 +236,7 @@ sudo ./get_helm.sh
 
 Apply MetalLB deployment
 
-```shell 
+```shell
 kubectl create ns metallb-system
 kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.9.2/manifests/metallb.yaml
 kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
@@ -286,31 +286,62 @@ Edit the file and replace `image: nvidia/k8s-device-plugin:1.0.0-beta5` with `im
 kubectl create -f nvidia-device-plugin.yml
 ```
 
-## KubeFlow for ML/DL
+## KubeFlow for Machine Learning
 
-### Install kfctl
+### Install Istio
+
+Download the istio tar file from Box folder.
+
 ```shell
-opsys=linux
+wget 
+```
 
-curl -s https://api.github.com/repos/kubeflow/kubeflow/releases/latest |\
-    grep browser_download |\
-    grep $opsys |\
-    cut -d '"' -f 4 |\
-    xargs curl -O -L && \
-    tar -zvxf kfctl_*_${opsys}.tar.gz
+Uncompress and extract the file
+
+```shell
+tar zxvf ibm-istio.tar.gz
+```
+
+Install Istio Pre-Reqs
+
+```shell
+cd ibm-istio
+kubectl create -f istio-psp.yaml
+kubectl create -f istio-clusterrole.yaml 
+kubectl apply -f ../ibm-istio/additionalFiles/crds/crd-10.yaml
+kubectl apply -f ../ibm-istio/additionalFiles/crds/crd-11.yaml
+kubectl apply -f ../ibm-istio/additionalFiles/crds/crd-12.yaml
+kubectl create ns istio-system
+NAMESPACE=istio-system
+helm install istio ../ibm-istio -n istio-system --set sidecarInjectorWebhook.enabled=false
 ```
 
 ### Install KubeFlow
+
+Download kfctl for Power
+
+```shell
+wget 
+
+
+Download kubeflow-0.6.2.tar.gz file from Box folder
+
+```shell
+wget 
+```
+
+Uncompress and extract the file
+
+```shell
+tar zxvf kubeflow-0.6.2.tar.gz
+```
+
+Edit the install file to point to the full path.
+
 ```shell
 # Add kfctl to PATH, to make the kfctl binary easier to use.
 export PATH=$PATH:"<path to kfctl>"
 export KFAPP="<your choice of application directory name>"
 
-# Installs Istio by default. Comment out Istio components in the config file to skip Istio installation. See https://github.com/kubeflow/kubeflow/pull/3663
-export CONFIG="https://raw.githubusercontent.com/kubeflow/kubeflow/v0.6-branch/bootstrap/config/kfctl_k8s_istio.0.6.2.yaml"
-
-kfctl init ${KFAPP} --config=${CONFIG} -V
-cd ${KFAPP}
-kfctl generate all -V
 kfctl apply all -V
 ```
