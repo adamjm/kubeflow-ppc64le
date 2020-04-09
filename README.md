@@ -1,6 +1,6 @@
-# Setup
+# Kubeflow On Power (PPC64LE)
 
-Steps to configure a single node kubernetes cluster with Kubeflow on Power.
+Steps to configure a single node kubernetes cluster with Kubeflow on Power (PPC64LE).
 
 * These instructions assume knowledge of PPC64LE, Linux, Kubernetes and Kubeflow *
 
