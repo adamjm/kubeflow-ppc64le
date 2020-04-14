@@ -359,7 +359,7 @@ tar zxvf kubeflow-0.6.2.tar.gz
 cd test-kubeflow
 ```
 
-Edit the `app.yaml` file to point to the full path for test-kubeflow, replace full-path.
+Edit the `app.yaml` file to point to the absolute path for test-kubeflow, replace full-path. Specifically replace <full-path> with the absolute path of the test-kubeflow directory where the following appears `appdir: <full-path>` and replace `localPath: <full-path>/.cache/manifests/...` and replace `localPath: <full-path>/.cache/kubeflow/...`.
 
 Apply `app.yaml` and monitor installation.
 
